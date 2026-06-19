@@ -3,14 +3,18 @@ import { Platform, StyleSheet, TouchableOpacity, View, ScrollView, Text, Image }
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RotateCcw, Shield, User, Camera, CheckCircle2, ChevronRight } from 'lucide-react-native';
 import { useFonts } from 'expo-font';
+import { useRouter } from 'expo-router';
 
 import Onboarding from '@/components/onboarding';
 import { useTheme } from '@/hooks/use-theme';
+import { useProfile } from '@/context/ProfileContext';
 
 export default function HomeScreen() {
   const [onboardingActive, setOnboardingActive] = useState(true);
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { profile } = useProfile();
 
   const [fontsLoaded] = useFonts({
     'Outfit-Regular': 'https://github.com/google/fonts/raw/main/ofl/outfit/static/Outfit-Regular.ttf',
@@ -24,12 +28,60 @@ export default function HomeScreen() {
     return Platform.OS === 'web' ? 'sans-serif' : 'System';
   };
 
+  const AVATAR_COLORS = {
+    mint: '#2ECC71',
+    teal: '#20B2AA',
+    coral: '#E74C3C',
+    gold: '#F1C40F',
+    purple: '#9B59B6',
+  };
+  const activeColor = AVATAR_COLORS[profile.avatar] || theme.primaryAccent;
+
+  const activeDiets = profile.dietaryPreferences.map(id => {
+    switch (id) {
+      case 'vegetarian': return 'Vegetarian ✅';
+      case 'vegan': return 'Vegan ✅';
+      case 'lactose': return 'Lactose Free ✅';
+      case 'gluten': return 'Gluten Free ✅';
+      case 'keto': return 'Keto Friendly ✅';
+      default: return id;
+    }
+  });
+
+  const activeConditions = profile.conditions.map(id => {
+    switch (id) {
+      case 'diabetes': return { text: 'Diabetes ✅', color: '#27AE60', bg: '#E8F8F5' };
+      case 'bp': return { text: 'High BP Risk ⚠️', color: '#D4AC0D', bg: '#FEF9E7' };
+      case 'cholesterol': return { text: 'High Cholesterol ⚠️', color: '#D4AC0D', bg: '#FEF9E7' };
+      case 'celiac': return { text: 'Celiac Disease ❌', color: '#C0392B', bg: '#FDEDEC' };
+      default: return { text: id, color: theme.primaryAccent, bg: '#E8F8F5' };
+    }
+  });
+
+  const activeAllergens = profile.allergens.map(id => {
+    switch (id) {
+      case 'peanuts': return 'Peanuts ❌';
+      case 'tree_nuts': return 'Tree Nuts ❌';
+      case 'dairy': return 'Dairy ❌';
+      case 'eggs': return 'Eggs ❌';
+      case 'soy': return 'Soy ❌';
+      case 'wheat': return 'Wheat ❌';
+      case 'shellfish': return 'Shellfish ❌';
+      default: return id;
+    }
+  });
+
   // If onboarding is active, render the overlay directly
   if (onboardingActive) {
     return (
       <View style={StyleSheet.absoluteFill}>
         <Onboarding
-          onComplete={() => setOnboardingActive(false)}
+          onComplete={() => {
+            setOnboardingActive(false);
+            if (!profile.isSetUp) {
+              router.push('/UserProfileSetupScreen');
+            }
+          }}
           onLogin={() => {
             if (Platform.OS === 'web') {
               window.alert('Simulation: Navigating to Login Screen');
@@ -37,6 +89,9 @@ export default function HomeScreen() {
               console.log('Simulation: Navigating to Login Screen');
             }
             setOnboardingActive(false);
+            if (!profile.isSetUp) {
+              router.push('/UserProfileSetupScreen');
+            }
           }}
         />
       </View>
@@ -55,12 +110,16 @@ export default function HomeScreen() {
               Welcome Back,
             </Text>
             <Text style={[styles.userNameText, { fontFamily: getFontFamily('bold'), color: theme.darkCharcoal }]}>
-              Member 1
+              {profile.name}
             </Text>
           </View>
-          <View style={[styles.avatarCircle, styles.glassSurface]}>
-            <User size={24} color={theme.primaryAccent} />
-          </View>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => router.push('/UserProfileSetupScreen')}
+            style={[styles.avatarCircle, styles.glassSurface, { borderColor: activeColor, borderWidth: 2 }]}
+          >
+            <User size={24} color={activeColor} />
+          </TouchableOpacity>
         </View>
 
         {/* Scan Status Banner */}
@@ -86,25 +145,34 @@ export default function HomeScreen() {
         </Text>
         
         <View style={styles.grid}>
-          {/* Card 1: Conditions */}
+          {/* Card 1: Conditions & Diets */}
           <View style={[styles.bentoCard, styles.glassSurface, { backgroundColor: theme.whiteSurface }]}>
             <View style={styles.cardHeader}>
-              <Shield size={20} color={theme.primaryAccent} />
+              <Shield size={20} color={activeColor} />
               <Text style={[styles.cardTitle, { fontFamily: getFontFamily('bold'), color: theme.darkCharcoal }]}>
-                Conditions
+                Health & Diets
               </Text>
             </View>
             <View style={styles.tagList}>
-              <View style={[styles.tag, { borderColor: theme.primaryAccent, backgroundColor: '#E8F8F5' }]}>
-                <Text style={[styles.tagText, { color: '#27AE60', fontFamily: getFontFamily('bold') }]}>
-                  Diabetes ✅
+              {activeConditions.map((cond, index) => (
+                <View key={`cond-${index}`} style={[styles.tag, { borderColor: cond.color, backgroundColor: cond.bg }]}>
+                  <Text style={[styles.tagText, { color: cond.color, fontFamily: getFontFamily('bold') }]}>
+                    {cond.text}
+                  </Text>
+                </View>
+              ))}
+              {activeDiets.map((diet, index) => (
+                <View key={`diet-${index}`} style={[styles.tag, { borderColor: theme.primaryAccent, backgroundColor: '#E8F8F5' }]}>
+                  <Text style={[styles.tagText, { color: '#27AE60', fontFamily: getFontFamily('bold') }]}>
+                    {diet}
+                  </Text>
+                </View>
+              ))}
+              {activeConditions.length === 0 && activeDiets.length === 0 && (
+                <Text style={{ fontSize: 11, color: theme.textSecondary, fontFamily: getFontFamily('regular'), fontStyle: 'italic' }}>
+                  No active health conditions or dietary preferences set.
                 </Text>
-              </View>
-              <View style={[styles.tag, { borderColor: '#F1C40F', backgroundColor: '#FEF9E7' }]}>
-                <Text style={[styles.tagText, { color: '#D4AC0D', fontFamily: getFontFamily('bold') }]}>
-                  High BP Risk ⚠️
-                </Text>
-              </View>
+              )}
             </View>
           </View>
 
@@ -117,11 +185,18 @@ export default function HomeScreen() {
               </Text>
             </View>
             <View style={styles.tagList}>
-              <View style={[styles.tag, { borderColor: '#E74C3C', backgroundColor: '#FDEDEC' }]}>
-                <Text style={[styles.tagText, { color: '#C0392B', fontFamily: getFontFamily('bold') }]}>
-                  Peanuts ❌
+              {activeAllergens.map((allergen, index) => (
+                <View key={`allergen-${index}`} style={[styles.tag, { borderColor: '#E74C3C', backgroundColor: '#FDEDEC' }]}>
+                  <Text style={[styles.tagText, { color: '#C0392B', fontFamily: getFontFamily('bold') }]}>
+                    {allergen}
+                  </Text>
+                </View>
+              ))}
+              {activeAllergens.length === 0 && (
+                <Text style={{ fontSize: 11, color: theme.textSecondary, fontFamily: getFontFamily('regular'), fontStyle: 'italic' }}>
+                  No active food allergies flagged.
                 </Text>
-              </View>
+              )}
             </View>
           </View>
         </View>
