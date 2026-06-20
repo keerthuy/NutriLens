@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface Profile {
   name: string;
+  avatar: string;
   dietaryPreferences: string[];
   conditions: string[];
   allergens: string[];
@@ -16,6 +17,7 @@ interface ProfileContextType {
 
 const defaultProfile: Profile = {
   name: 'Member 1',
+  avatar: 'mint',
   dietaryPreferences: [],
   conditions: [],
   allergens: [],

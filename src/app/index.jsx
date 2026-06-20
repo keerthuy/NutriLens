@@ -10,11 +10,11 @@ import { useTheme } from '@/hooks/use-theme';
 import { useProfile } from '@/context/ProfileContext';
 
 export default function HomeScreen() {
-  const [onboardingActive, setOnboardingActive] = useState(true);
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { profile } = useProfile();
+  const [onboardingActive, setOnboardingActive] = useState(!profile.isSetUp);
 
   const [fontsLoaded] = useFonts({
     'Outfit-Regular': 'https://github.com/google/fonts/raw/main/ofl/outfit/static/Outfit-Regular.ttf',
@@ -79,7 +79,7 @@ export default function HomeScreen() {
           onComplete={() => {
             setOnboardingActive(false);
             if (!profile.isSetUp) {
-              router.push('/UserProfileSetupScreen');
+              router.push('/ProfileSetupScreen');
             }
           }}
           onLogin={() => {
@@ -90,7 +90,7 @@ export default function HomeScreen() {
             }
             setOnboardingActive(false);
             if (!profile.isSetUp) {
-              router.push('/UserProfileSetupScreen');
+              router.push('/ProfileSetupScreen');
             }
           }}
         />
@@ -115,7 +115,7 @@ export default function HomeScreen() {
           </View>
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => router.push('/UserProfileSetupScreen')}
+            onPress={() => router.push('/ProfileSetupScreen')}
             style={[styles.avatarCircle, styles.glassSurface, { borderColor: activeColor, borderWidth: 2 }]}
           >
             <User size={24} color={activeColor} />

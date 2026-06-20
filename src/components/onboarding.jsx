@@ -3,11 +3,11 @@ import {
   StyleSheet,
   View,
   Text,
-  Dimensions,
   Image,
   TouchableOpacity,
   Animated,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
@@ -23,13 +23,12 @@ import {
 import Svg, { Path, Line } from 'react-native-svg';
 import { useTheme } from '@/hooks/use-theme';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
 const BORDER_RADIUS = 28;
 
 export default function Onboarding({ onComplete, onLogin }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
   const [currentPage, setCurrentPage] = useState(0);
   const scrollX = useMemo(() => new Animated.Value(0), []);
   const scrollViewRef = useRef(null);
@@ -247,7 +246,7 @@ export default function Onboarding({ onComplete, onLogin }) {
         style={styles.scrollWrapper}>
         
         {/* SCREEN 1 */}
-        <View style={styles.pageScreen}>
+        <View style={[styles.pageScreen, { width: SCREEN_WIDTH, height: SCREEN_HEIGHT }]}>
           <View style={[styles.illustrationSection, { backgroundColor: '#FFFFFF' }]}>
             <Image
               source={require('@/assets/images/onboarding_woman.png')}
@@ -353,7 +352,7 @@ export default function Onboarding({ onComplete, onLogin }) {
         </View>
 
         {/* SCREEN 2 */}
-        <View style={styles.pageScreen}>
+        <View style={[styles.pageScreen, { width: SCREEN_WIDTH, height: SCREEN_HEIGHT }]}>
           <View style={[styles.illustrationSection, { backgroundColor: '#FFFFFF' }]}>
             <View style={styles.smartphoneFrameContainer}>
               <View style={[styles.smartphoneFrame, styles.glassSurface]}>
@@ -385,7 +384,7 @@ export default function Onboarding({ onComplete, onLogin }) {
                           {
                             translateY: scanLineAnim.interpolate({
                               inputRange: [0, 1],
-                              outputRange: [0, 176],
+                              outputRange: [0, 126],
                             }),
                           },
                         ],
@@ -394,19 +393,7 @@ export default function Onboarding({ onComplete, onLogin }) {
                   />
                 </Animated.View>
 
-                <View style={styles.appleScannerTechNode}>
-                  <View style={[styles.scannerNodeDot, { backgroundColor: theme.primaryAccent }]} />
-                  <Text style={[styles.scannerNodeText, { fontFamily: getFontFamily('bold'), color: theme.primaryAccent }]}>
-                    Cal: 95 kcal
-                  </Text>
-                </View>
-                
-                <View style={[styles.appleScannerTechNode, styles.scannerNodeBottomRight]}>
-                  <View style={[styles.scannerNodeDot, { backgroundColor: theme.primaryAccent }]} />
-                  <Text style={[styles.scannerNodeText, { fontFamily: getFontFamily('bold'), color: theme.primaryAccent }]}>
-                    Vitamin C: 14%
-                  </Text>
-                </View>
+
               </View>
             </View>
 
@@ -431,7 +418,7 @@ export default function Onboarding({ onComplete, onLogin }) {
         </View>
 
         {/* SCREEN 3 */}
-        <View style={styles.pageScreen}>
+        <View style={[styles.pageScreen, { width: SCREEN_WIDTH, height: SCREEN_HEIGHT }]}>
           <View style={[styles.illustrationSection, { backgroundColor: '#FFFFFF', overflow: 'visible' }]}>
             <View style={styles.profileHubContainer}>
               <View style={styles.svgWebWrapper}>
@@ -581,8 +568,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   pageScreen: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
     flexDirection: 'column',
   },
   illustrationSection: {
@@ -617,9 +602,9 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   womanImage: {
-    width: '85%',
-    height: '80%',
-    marginTop: 20,
+    width: '90%',
+    height: '85%',
+    marginTop: 10,
   },
   floatingBadge: {
     position: 'absolute',
@@ -659,11 +644,11 @@ const styles = StyleSheet.create({
     right: '10%',
   },
   smartphoneFrameContainer: {
-    width: 220,
-    height: 320,
+    width: 180,
+    height: 260,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 30,
+    marginTop: 15,
   },
   smartphoneFrame: {
     width: '100%',
@@ -676,13 +661,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(240, 248, 245, 0.6)',
   },
   appleImage: {
-    width: 140,
-    height: 140,
+    width: 100,
+    height: 100,
   },
   cameraReticle: {
     position: 'absolute',
-    width: 180,
-    height: 180,
+    width: 130,
+    height: 130,
     borderWidth: 1.5,
     borderStyle: 'dashed',
     borderRadius: 20,
