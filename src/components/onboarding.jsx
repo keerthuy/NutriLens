@@ -251,7 +251,7 @@ export default function Onboarding({ onComplete, onLogin }) {
             <Image
               source={require('@/assets/images/onboarding_woman.png')}
               style={styles.womanImage}
-              resizeMode="contain"
+              resizeMode="cover"
             />
             <Animated.View
               style={[
@@ -602,9 +602,9 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   womanImage: {
-    width: '90%',
-    height: '85%',
-    marginTop: 10,
+    width: '100%',
+    height: '100%',
+    marginTop: 0,
   },
   floatingBadge: {
     position: 'absolute',

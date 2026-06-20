@@ -29,9 +29,7 @@ const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 export const DIETARY_OPTIONS = [
   { id: 'vegetarian', label: 'Vegetarian', description: 'No meat or fish' },
   { id: 'vegan', label: 'Vegan', description: 'No animal products' },
-  { id: 'lactose', label: 'Lactose Free', description: 'No milk sugar/dairy lactose' },
-  { id: 'gluten', label: 'Gluten Free', description: 'No wheat, barley, or rye' },
-  { id: 'keto', label: 'Keto Friendly', description: 'Low carb, high fat' },
+  { id: 'non_vegetarian', label: 'Non-Vegetarian', description: 'Includes meat, fish, and poultry' },
 ];
 
 export const CONDITION_OPTIONS = [

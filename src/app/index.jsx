@@ -41,6 +41,7 @@ export default function HomeScreen() {
     switch (id) {
       case 'vegetarian': return 'Vegetarian ✅';
       case 'vegan': return 'Vegan ✅';
+      case 'non_vegetarian': return 'Non-Vegetarian ✅';
       case 'lactose': return 'Lactose Free ✅';
       case 'gluten': return 'Gluten Free ✅';
       case 'keto': return 'Keto Friendly ✅';

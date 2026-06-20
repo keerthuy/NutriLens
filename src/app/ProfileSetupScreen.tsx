@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFonts } from 'expo-font';
-import { ArrowLeft, ArrowRight, Check, Shield, AlertCircle, Heart } from 'lucide-react-native';
+import { ArrowLeft, ArrowRight, Check, Shield, AlertCircle, Heart, Leaf, Sprout, Drumstick } from 'lucide-react-native';
 import { useProfile, DIETARY_OPTIONS, CONDITION_OPTIONS, ALLERGEN_OPTIONS } from '@/context/ProfileContext';
 import { useTheme } from '@/hooks/use-theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -81,9 +81,7 @@ export default function ProfileSetupScreen() {
   };
 
   const toggleDiet = (id: string) => {
-    setSelectedDiet((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+    setSelectedDiet((prev) => (prev.includes(id) ? [] : [id]));
   };
 
   const toggleCondition = (id: string) => {
@@ -96,6 +94,20 @@ export default function ProfileSetupScreen() {
     setSelectedAllergens((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
+  };
+
+  const getDietIcon = (id: string, isSelected: boolean) => {
+    const color = isSelected ? '#FFFFFF' : theme.textSecondary;
+    switch (id) {
+      case 'vegetarian':
+        return <Leaf size={18} color={color} />;
+      case 'vegan':
+        return <Sprout size={18} color={color} />;
+      case 'non_vegetarian':
+        return <Drumstick size={18} color={color} />;
+      default:
+        return <Leaf size={18} color={color} />;
+    }
   };
 
   // Helper for current active color
@@ -207,7 +219,7 @@ export default function ProfileSetupScreen() {
               Dietary Preferences
             </Text>
             <Text style={[styles.stepSubtitle, { fontFamily: getFontFamily('regular'), color: theme.textSecondary }]}>
-              Select any diets or restrictions you follow.
+              Select the diet you follow.
             </Text>
 
             <ScrollView contentContainerStyle={styles.optionsList} showsVerticalScrollIndicator={false}>
@@ -228,7 +240,10 @@ export default function ProfileSetupScreen() {
                     ]}
                   >
                     <View style={styles.optionHeader}>
-                      <View style={{ flex: 1 }}>
+                      <View style={[styles.conditionIconWrapper, { backgroundColor: isSelected ? activeThemeColor : theme.backgroundElement }]}>
+                        {getDietIcon(opt.id, isSelected)}
+                      </View>
+                      <View style={{ flex: 1, marginLeft: 12 }}>
                         <Text style={[styles.optionLabel, { fontFamily: getFontFamily('bold'), color: theme.darkCharcoal }]}>
                           {opt.label}
                         </Text>
